@@ -28,6 +28,27 @@ that this crate provides. The encoding functions are therefore all
 partial. But they should handle a significant enough quantity of strings to
 make it worthwhile.
 
+### Usage Summary
+
+Encoding is done via the `EncodeSixbit` trait attached to `Iterator<char>`,
+so you can just do: `let enc = "hello".chars().encode_sixbit::<u64>()`. If
+there is a failure (say, the string spans pages or doesn't fit) you'll get
+back an `Err(EncodeError)` with details, otherwise `Ok(n)` where `n` is a
+`u64`.
+
+Decoding is a `DecodeSixbitIter` iterator implementing `Iterator<char>`,
+attached to the various packed types, allowing you to write `let s:String =
+someu64.decode_sixbit().collect()`, or any other pattern that takes an
+`Iterator<char>`.
+
+In several cases you will need to normalize or decompose "standard" unicode text
+before pushing it through these interfaces. For example, the Hangul page only
+has compatibility jamo, so you have to decompose standard Korean text to that
+form before encoding. Similarly the Halfwidth Kana are unlikely to be the
+characters standard Japanese text arrives in, and Devanagari strings with nuktas
+will need to be decomposed before mapping. This crate does none of these tasks:
+it's a building block, not a complete solution.
+
 ### Code Pages
 
 Every packed string produced by this crate begins with a small tag
