@@ -282,7 +282,7 @@ const ARABIC : [char; 64] = [
     // 1 hamza
     'ء',
 
-    // 28 main characters in range U+0627-U+0649
+    // 29 main characters in range U+0627-U+0649
     'ا', 'ب', 'ة', 'ت', 'ث', 'ج', 'ح', 'خ',
     'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض',
     'ط', 'ظ', 'ع', 'غ',
@@ -290,8 +290,7 @@ const ARABIC : [char; 64] = [
     // omit: U+0640 kashida
     'ف', 'ق',
     // omit: U+0643 isolated kaf
-    'ل', 'م', 'ن', 'ه', 'و', 'ى',
-    // omit: U+U064A yeh
+    'ل', 'م', 'ن', 'ه', 'و', 'ى', 'ي',
 
     // 3 short vowels and 1 shadda
     // (sorry my editor balked at displaying some literals here)
@@ -331,10 +330,10 @@ const ARABIC : [char; 64] = [
     // U+06D4 full stop
     '۔',
 
-    // Space for 10 more, not sure which to include; expert help wanted!
+    // Space for 9 more, not sure which to include; expert help wanted!
     '\u{ffff}', '\u{ffff}', '\u{ffff}', '\u{ffff}',
     '\u{ffff}', '\u{ffff}', '\u{ffff}', '\u{ffff}',
-    '\u{ffff}', '\u{ffff}',
+    '\u{ffff}',
 ];
 
 // Page 11 00: U+0000, then a selection detailed below from U+0902-U+0965;
