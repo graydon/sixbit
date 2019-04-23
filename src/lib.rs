@@ -294,11 +294,16 @@ const ARABIC : [char; 64] = [
 
     // 3 short vowels and 1 shadda
     // (sorry my editor balked at displaying some literals here)
+    // fatha     damma       kasra       shadda
     '\u{064e}', '\u{064f}', '\u{0650}', '\u{0651}',
     // 2 combining forms of maddah and hamza
+    // maddah    hamza
     '\u{0653}', '\u{0654}',
     // 2 vowels used only in Urdu
-    '\u{0656}', '\u{0657}',
+    // subscript alef
+    '\u{0656}', 
+    // inverted damma / ulta pesh
+    '\u{0657}',
 
     // 1 superscript alef
     '\u{0670}',
