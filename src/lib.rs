@@ -346,9 +346,9 @@ const ARABIC : [char; 64] = [
 // something about Devanagari script.
 const DEVANAGARI : [char; 64] = [
     '\0',
-    // 3 diacritics candrabindu, anusvara, visarga
-    'ं', 'ः', 'ँ',
-    // omit: u+0904 short A (Awadhi)
+    // 3 diacritics U+901 candrabindu, U+902 anusvara, U+903 visarga
+    'ँ', 'ं', 'ः',
+    // omit: U+0904 short A (Awadhi)
     // 11 standalone vowels (U+0905-U+0914)
     'अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ',
     // omit: U+090C vocalic L (Sanskrit)
