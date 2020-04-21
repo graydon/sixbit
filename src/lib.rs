@@ -282,7 +282,7 @@ const ARABIC : [char; 64] = [
     // 1 hamza
     'ء',
 
-    // 28 main characters in range U+0627-U+0649
+    // 29 main characters in range U+0627-U+0649
     'ا', 'ب', 'ة', 'ت', 'ث', 'ج', 'ح', 'خ',
     'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض',
     'ط', 'ظ', 'ع', 'غ',
@@ -290,16 +290,20 @@ const ARABIC : [char; 64] = [
     // omit: U+0640 kashida
     'ف', 'ق',
     // omit: U+0643 isolated kaf
-    'ل', 'م', 'ن', 'ه', 'و', 'ى',
-    // omit: U+U064A yeh
+    'ل', 'م', 'ن', 'ه', 'و', 'ى', 'ي',
 
     // 3 short vowels and 1 shadda
     // (sorry my editor balked at displaying some literals here)
+    // fatha     damma       kasra       shadda
     '\u{064e}', '\u{064f}', '\u{0650}', '\u{0651}',
     // 2 combining forms of maddah and hamza
+    // maddah    hamza
     '\u{0653}', '\u{0654}',
     // 2 vowels used only in Urdu
-    '\u{0656}', '\u{0657}',
+    // subscript alef
+    '\u{0656}', 
+    // inverted damma / ulta pesh
+    '\u{0657}',
 
     // 1 superscript alef
     '\u{0670}',
@@ -331,49 +335,53 @@ const ARABIC : [char; 64] = [
     // U+06D4 full stop
     '۔',
 
-    // Space for 10 more, not sure which to include; expert help wanted!
+    // Space for 9 more, not sure which to include; expert help wanted!
     '\u{ffff}', '\u{ffff}', '\u{ffff}', '\u{ffff}',
     '\u{ffff}', '\u{ffff}', '\u{ffff}', '\u{ffff}',
-    '\u{ffff}', '\u{ffff}',
+    '\u{ffff}',
 ];
 
-// Page 11 00: U+0000, then a selection detailed below from U+0902-U+0965;
+// Page 11 00: U+0000, then a selection detailed below from U+0901-U+0965;
 // characters selected on the advice of @Manishearth who, unlike me, knows
 // something about Devanagari script.
 const DEVANAGARI : [char; 64] = [
     '\0',
-    // 2 diacritics anusvara and visarga
-    'ं', 'ः',
+    // 3 diacritics candrabindu, anusvara, visarga
+    'ं', 'ः', 'ँ',
+    // omit: u+0904 short A (Awadhi)
     // 11 standalone vowels (U+0905-U+0914)
     'अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ऋ',
-    // omit: U+090C vocalic L
-    // omit: U+090D candra E
-    // omit: U+090E short E
+    // omit: U+090C vocalic L (Sanskrit)
+    // omit: U+090D candra E (transcription)
+    // omit: U+090E short E (Kashmiri, Bihari, transcription)
     'ए', 'ऐ',
-    // omit: U+0911 candra o
-    // omit: U+0912 short o
+    // omit: U+0911 candra o (transcription)
+    // omit: U+0912 short o (Kashmiri, Bihari)
     'ओ', 'औ',
-    // 33 consonants (U+0915-U+0939)
+    // 34 consonants (U+0915-U+0939)
     'क', 'ख', 'ग', 'घ', 'ङ', 'च', 'छ', 'ज', 'झ', 'ञ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 'त',
-    'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 'य', 'र', 'ल', 'व', 'श', 'ष', 'स',
-    'ह',
+    'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 'य', 'र', 'ल', 'ळ', 'व', 'श', 'ष',
+    'स','ह',
+    // omit: U+0934 letter LLLA (transcription)
     // 1 diacritic nukta
     '़',
     // 10 combining vowels (U+093E-U+094C)
     'ा', 'ि', 'ी', 'ु', 'ू', 'ृ',
-    // omit: U+0944 vocalic rr
-    // omit: U+0945 candra e
-    // omit: U+0946 short e
+    // omit: U+0944 vocalic rr (Sanskrit)
+    // omit: U+0945 candra e (transcription)
+    // omit: U+0946 short e (Kashmiri, Bihari, transcription)
     'े', 'ै',
-    // omit: U+0949 candra o
-    // omit: U+094A short o
+    // omit: U+0949 candra o (transcription)
+    // omit: U+094A short o (Kashmiri, Bihari, transcription)
     'ो', 'ौ',
+    // omit: multiple diacritics for Kashmiri, Sanskrit, obsolete orthographies,
+    // as well as old vocalics and Hindi nukta consonants (users should decompose them)
     // 1 diacritic virama
     '्',
     // 2 punctuators danda and double danda
     '।', '॥',
-    // Space for 3 more, not sure which to include: expert help wanted!
-    '\u{ffff}', '\u{ffff}', '\u{ffff}',
+    // Space for 1 more, not sure which to include: expert help wanted!
+    '\u{ffff}',
 ];
 
 // Page 11 10: U+0000, then U+3131-U+3163 (initial part of KS X 1001 - 0x24 / 0xA4)
