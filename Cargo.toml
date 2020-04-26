@@ -2,8 +2,9 @@
 name = "sixbit"
 description = "Small packed strings"
 keywords = ["text", "string", "small", "unicode"]
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Graydon Hoare <graydon@pobox.com>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
 repository = "http://github.com/graydon/sixbit"
+readme = "README.md"

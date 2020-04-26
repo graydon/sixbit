@@ -1,6 +1,4 @@
-# sixbit
-
-## Sixbit - a crate for small packed strings.
+# Sixbit - a crate for small packed strings.
 
 This crate provides densely-packed 8-bit, 16-bit, 32-bit, 64-bit, and
 128-bit "small strings", in a variety of custom script-specific
@@ -28,7 +26,7 @@ that this crate provides. The encoding functions are therefore all
 partial. But they should handle a significant enough quantity of strings to
 make it worthwhile.
 
-### Usage Summary
+## Usage Summary
 
 Encoding is done via the `EncodeSixbit` trait attached to `Iterator<char>`,
 so you can just do: `let enc = "hello".chars().encode_sixbit::<u64>()`. If
@@ -49,7 +47,7 @@ characters standard Japanese text arrives in, and Devanagari strings with nuktas
 will need to be decomposed before mapping. This crate does none of these tasks:
 it's a building block, not a complete solution.
 
-### Code Pages
+## Code Pages
 
 Every packed string produced by this crate begins with a small tag
 indicating the "code page" of the rest of the string. A code page here is a
@@ -67,7 +65,7 @@ reading this and choose to use the crate and are going to store values from
 this crate in stable storage, you should lock your client to a specific
 point-revision of the crate until 1.0.
 
-#### Constraints
+### Constraints
 
 There is only enough room in the tag to reference a handful of code pages;
 not every script will make it, but luckily only a few scripts account for
@@ -83,7 +81,7 @@ lexicographical string order (including "short strings sort before
 long"). This dictates a fair amount about the tag values, code repertoires,
 and normal form of the encoded strings.
 
-#### Design
+### Design
 
 Code pages are taken from (or in some cases, across) unicode blocks, and
 tags are ordered by (initial) unicode block. Codes within each code page are
