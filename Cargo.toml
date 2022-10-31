@@ -2,9 +2,15 @@
 name = "sixbit"
 description = "Small packed strings"
 keywords = ["text", "string", "small", "unicode"]
-version = "0.4.0"
+version = "0.5.0"
 authors = ["Graydon Hoare <graydon@pobox.com>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
 repository = "http://github.com/graydon/sixbit"
 readme = "README.md"
+
+[dependencies]
+arbitrary = "1.2.0"
+
+[dev-dependencies]
+rand = "0.8.5"

@@ -107,12 +107,12 @@ The high order / 2-bit tags select among 4 "primary" (most-likely) scripts
 spread across the unicode range (in code block order). These are available
 in all packed values:
 
-  | tag | page contents                              |
-  |-----|--------------------------------------------|
-  |  00 | Latin (with digits and underscore)         |
-  |  01 | Arabic                                     |
-  |  10 | Devanagari                                 |
-  |  11 | Chinese                                    |
+| tag | page contents                              |
+|-----|--------------------------------------------|
+|  00 | Latin (with digits and underscore)         |
+|  01 | Arabic                                     |
+|  10 | Devanagari                                 |
+|  11 | Chinese                                    |
 
 When packing 64-bit and 16-bit values we get _4_ spare bits to use for a
 tag, not just 2. In these cases we therefore have 12 additional scripts
@@ -121,27 +121,27 @@ we keep the high order bits the same and add 2 bits below, picking
 additional scripts _from the block ranges between_ those of the primary
 scripts (again, in unicode block order):
 
-  | tag   | page contents                                 |
-  |-------|-----------------------------------------------|
-  | 00 00 | Latin (with digits and underscore)            |
-  | 00 01 | Greek                                         |
-  | 00 10 | Cyrillic                                      |
-  | 00 11 | Hebrew                                        |
-  |       |                                               |
-  | 01 00 | Arabic                                        |
-  | 01 01 | *reserved*                                    |
-  | 01 10 | *reserved*                                    |
-  | 01 11 | *reserved*                                    |
-  |       |                                               |
-  | 10 00 | Devanagari                                    |
-  | 10 01 | *reserved*                                    |
-  | 10 10 | *reserved*                                    |
-  | 10 11 | Hangul Compatibility Jamo                     |
-  |       |                                               |
-  | 11 00 | Chinese                                       |
-  | 11 01 | *reserved*                                    |
-  | 11 10 | *reserved*                                    |
-  | 11 11 | Halfwidth Kana                                |
+| tag   | page contents                                 |
+|-------|-----------------------------------------------|
+| 00 00 | Latin (with digits and underscore)            |
+| 00 01 | Greek                                         |
+| 00 10 | Cyrillic                                      |
+| 00 11 | Hebrew                                        |
+|       |                                               |
+| 01 00 | Arabic                                        |
+| 01 01 | *reserved*                                    |
+| 01 10 | *reserved*                                    |
+| 01 11 | *reserved*                                    |
+|       |                                               |
+| 10 00 | Devanagari                                    |
+| 10 01 | *reserved*                                    |
+| 10 10 | *reserved*                                    |
+| 10 11 | Hangul Compatibility Jamo                     |
+|       |                                               |
+| 11 00 | Chinese                                       |
+| 11 01 | *reserved*                                    |
+| 11 10 | *reserved*                                    |
+| 11 11 | Halfwidth Kana                                |
 
 The *reserved* cases are where I either didn't know enough about the scripts
 available in that range of unicode, or ran out of good candidates, or both.

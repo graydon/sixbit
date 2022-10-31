@@ -109,12 +109,12 @@
 //! spread across the unicode range (in code block order). These are available
 //! in all packed values:
 //!
-//!   | tag | page contents                              |
-//!   |-----|--------------------------------------------|
-//!   |  00 | Latin (with digits and underscore)         |
-//!   |  01 | Arabic                                     |
-//!   |  10 | Devanagari                                 |
-//!   |  11 | Chinese                                    |
+//! | tag | page contents                              |
+//! |-----|--------------------------------------------|
+//! |  00 | Latin (with digits and underscore)         |
+//! |  01 | Arabic                                     |
+//! |  10 | Devanagari                                 |
+//! |  11 | Chinese                                    |
 //!
 //! When packing 64-bit and 16-bit values we get _4_ spare bits to use for a
 //! tag, not just 2. In these cases we therefore have 12 additional scripts
@@ -123,27 +123,27 @@
 //! additional scripts _from the block ranges between_ those of the primary
 //! scripts (again, in unicode block order):
 //!
-//!   | tag   | page contents                                 |
-//!   |-------|-----------------------------------------------|
-//!   | 00 00 | Latin (with digits and underscore)            |
-//!   | 00 01 | Greek                                         |
-//!   | 00 10 | Cyrillic                                      |
-//!   | 00 11 | Hebrew                                        |
-//!   |       |                                               |
-//!   | 01 00 | Arabic                                        |
-//!   | 01 01 | *reserved*                                    |
-//!   | 01 10 | *reserved*                                    |
-//!   | 01 11 | *reserved*                                    |
-//!   |       |                                               |
-//!   | 10 00 | Devanagari                                    |
-//!   | 10 01 | *reserved*                                    |
-//!   | 10 10 | *reserved*                                    |
-//!   | 10 11 | Hangul Compatibility Jamo                     |
-//!   |       |                                               |
-//!   | 11 00 | Chinese                                       |
-//!   | 11 01 | *reserved*                                    |
-//!   | 11 10 | *reserved*                                    |
-//!   | 11 11 | Halfwidth Kana                                |
+//! | tag   | page contents                                 |
+//! |-------|-----------------------------------------------|
+//! | 00 00 | Latin (with digits and underscore)            |
+//! | 00 01 | Greek                                         |
+//! | 00 10 | Cyrillic                                      |
+//! | 00 11 | Hebrew                                        |
+//! |       |                                               |
+//! | 01 00 | Arabic                                        |
+//! | 01 01 | *reserved*                                    |
+//! | 01 10 | *reserved*                                    |
+//! | 01 11 | *reserved*                                    |
+//! |       |                                               |
+//! | 10 00 | Devanagari                                    |
+//! | 10 01 | *reserved*                                    |
+//! | 10 10 | *reserved*                                    |
+//! | 10 11 | Hangul Compatibility Jamo                     |
+//! |       |                                               |
+//! | 11 00 | Chinese                                       |
+//! | 11 01 | *reserved*                                    |
+//! | 11 10 | *reserved*                                    |
+//! | 11 11 | Halfwidth Kana                                |
 //!
 //! The *reserved* cases are where I either didn't know enough about the scripts
 //! available in that range of unicode, or ran out of good candidates, or both.
@@ -163,13 +163,18 @@
 //! |  u16        | 4        |  12         |  2              | 0                |
 //! |   u8        | 2        |   6         |  1              | 0                |
 
-use std::ops::{BitOrAssign, ShlAssign};
 use std::mem::size_of;
+use std::ops::{BitOrAssign, ShlAssign};
+
+use arbitrary::Unstructured;
+
+#[rustfmt::skip]
+mod consts {
 
 // Page 00 00: U+0000, then U+0030-U+0039, U+0041-U+005A, U+005F, and U+0061-U+007A.
 // Enough to encode the common [a-zA-Z0-9_] character class used in many programming
 // language and data format identifier repertoires.
-const LATIN : [char; 64] = [
+pub(crate) const LATIN : [char; 64] = [
     '\0', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
     'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
     'V', 'W', 'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
@@ -178,7 +183,7 @@ const LATIN : [char; 64] = [
 
 // Page 00 11: U+0000, then upper and lowercase characters in order from
 // U+0386-U+03CE, including stressed forms but omitting diaeresis forms.
-const GREEK : [char; 64] = [
+pub(crate) const GREEK : [char; 64] = [
     '\0',
     // 7 stressed uppercase characters
     'Ά', 'Έ', 'Ή', 'Ί', 'Ό', 'Ύ', 'Ώ',
@@ -195,7 +200,7 @@ const GREEK : [char; 64] = [
 ];
 
 // Page 01 00: U+0000, then U+0410-U+044F excepting the lowercase hard-sign U+044A
-const CYRILLIC : [char; 64] = [
+pub(crate) const CYRILLIC : [char; 64] = [
     '\0', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О',
     'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю',
     'Я', 'а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о',
@@ -203,7 +208,7 @@ const CYRILLIC : [char; 64] = [
 ];
 
 // Page 01 01: U+0000, then U+05B0-U+05F4
-const HEBREW : [char; 64] = [
+pub(crate) const HEBREW : [char; 64] = [
     '\0', 'ְ', 'ֱ', 'ֲ', 'ֳ', 'ִ', 'ֵ', 'ֶ', 'ַ', 'ָ', 'ֹ', 'ֺ', 'ֻ', 'ּ', 'ֽ', '־',
     'ֿ', '׀', 'ׁ', 'ׂ', '׃', 'ׄ', 'ׅ', '׆', 'ׇ', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז',
     'ח', 'ט', 'י', 'ך', 'כ', 'ל', 'ם', 'מ', 'ן', 'נ', 'ס', 'ע', 'ף', 'פ', 'ץ', 'צ',
@@ -216,7 +221,7 @@ const HEBREW : [char; 64] = [
 // Page 10 00: U+0000, then a selection (leaning Perso-Arabic) from the Arabic
 // block U+0600–U+06FF, detailed below. Characters selected on the advice of
 // @Manishearth who, unlike me, knows something about Arabic script.
-const ARABIC : [char; 64] = [
+pub(crate) const ARABIC : [char; 64] = [
     '\0',
 
     // 3 punctuators
@@ -292,7 +297,7 @@ const ARABIC : [char; 64] = [
 // Page 11 00: U+0000, then a selection detailed below from U+0901-U+0965;
 // characters selected on the advice of @Manishearth who, unlike me, knows
 // something about Devanagari script.
-const DEVANAGARI : [char; 64] = [
+pub(crate) const DEVANAGARI : [char; 64] = [
     '\0',
     // 3 diacritics U+901 candrabindu, U+902 anusvara, U+903 visarga
     'ँ', 'ं', 'ः',
@@ -333,7 +338,7 @@ const DEVANAGARI : [char; 64] = [
 ];
 
 // Page 11 10: U+0000, then U+3131-U+3163 (initial part of KS X 1001 - 0x24 / 0xA4)
-const HANGUL_COMPATIBILITY_JAMO : [char; 64] = [
+pub(crate) const HANGUL_COMPATIBILITY_JAMO : [char; 64] = [
     '\0', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ',
     'ㅀ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ', 'ㅏ',
     'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ',
@@ -345,14 +350,14 @@ const HANGUL_COMPATIBILITY_JAMO : [char; 64] = [
 ];
 
 // Page 11 11: U+0000, then U+FF61-U+FF9F (latter part of JIS-X-0201)
-const HALFWIDTH_KANA : [char; 64] = [
+pub(crate) const HALFWIDTH_KANA : [char; 64] = [
     '\0', '｡', '｢', '｣', '､', '･', 'ｦ', 'ｧ', 'ｨ', 'ｩ', 'ｪ', 'ｫ', 'ｬ', 'ｭ', 'ｮ', 'ｯ',
     'ｰ', 'ｱ', 'ｲ', 'ｳ', 'ｴ', 'ｵ', 'ｶ', 'ｷ', 'ｸ', 'ｹ', 'ｺ', 'ｻ', 'ｼ', 'ｽ', 'ｾ', 'ｿ',
     'ﾀ', 'ﾁ', 'ﾂ', 'ﾃ', 'ﾄ', 'ﾅ', 'ﾆ', 'ﾇ', 'ﾈ', 'ﾉ', 'ﾊ', 'ﾋ', 'ﾌ', 'ﾍ', 'ﾎ', 'ﾏ',
     'ﾐ', 'ﾑ', 'ﾒ', 'ﾓ', 'ﾔ', 'ﾕ', 'ﾖ', 'ﾗ', 'ﾘ', 'ﾙ', 'ﾚ', 'ﾛ', 'ﾜ', 'ﾝ', 'ﾞ', 'ﾟ'
 ];
 
-const RESERVED : [char; 64] = [
+pub(crate) const RESERVED : [char; 64] = [
     '\u{ffff}', '\u{ffff}', '\u{ffff}', '\u{ffff}',
     '\u{ffff}', '\u{ffff}', '\u{ffff}', '\u{ffff}',
     '\u{ffff}', '\u{ffff}', '\u{ffff}', '\u{ffff}',
@@ -371,13 +376,13 @@ const RESERVED : [char; 64] = [
     '\u{ffff}', '\u{ffff}', '\u{ffff}', '\u{ffff}',
 ];
 
-const CHINESE : [char; 64] = RESERVED;
-const CHINESE_LO: char = '\u{4e00}';
-const CHINESE_HI: char = '\u{9fff}';
-const CHINESE_2BIT_TAG: usize = 0b11;
-const CHINESE_4BIT_TAG: usize = 0b1100;
+pub(crate) const CHINESE: [char; 64] = RESERVED;
+pub(crate) const CHINESE_LO: char = '\u{4e00}';
+pub(crate) const CHINESE_HI: char = '\u{9fff}';
+pub(crate) const CHINESE_2BIT_TAG: usize = 0b11;
+pub(crate) const CHINESE_4BIT_TAG: usize = 0b1100;
 
-const PAGES : [[char; 64]; 16] = [
+pub(crate) const PAGES: [[char; 64]; 16] = [
     LATIN,
     GREEK,
     CYRILLIC,
@@ -396,8 +401,11 @@ const PAGES : [[char; 64]; 16] = [
     CHINESE,
     RESERVED,
     RESERVED,
-    HALFWIDTH_KANA
+    HALFWIDTH_KANA,
 ];
+}
+
+use consts::*;
 
 pub trait PackedValue
 where
@@ -406,12 +414,13 @@ where
     Self: BitOrAssign<Self>,
     Self: ::std::cmp::PartialOrd,
     Self: ::std::fmt::Debug,
-    Self: ::std::fmt::LowerHex
+    Self: ::std::fmt::LowerHex,
 {
     const NBITS: usize = size_of::<Self>() * 8;
     const NCHARS: usize = Self::NBITS / 6;
     const NTAGBITS: usize = Self::NBITS - (Self::NCHARS * 6);
     const NCHARBITS: usize = Self::NBITS - Self::NTAGBITS;
+    const NWIDECHARS: usize = (Self::NBITS - Self::NTAGBITS) / 15;
     // This is a bit ridiculous; I literally tried 4 different crates and every
     // trait I could find in the stdlib and it seems like there is some sort of
     // community-wide conspiracy to ensure the absence of generic truncating
@@ -420,31 +429,86 @@ where
 
     // This also seems somewhat contorted to express via existing traits.
     fn most_significant_byte(self) -> u8;
+
+    // This is to help generate random data in tests or fuzzers.
+    fn arbitrary<'a>(u: &mut Unstructured<'a>) -> arbitrary::Result<Self> {
+        let page_num = if Self::NTAGBITS == 2 {
+            u.int_in_range::<usize>(0..=3)? * 4
+        } else {
+            *u.choose::<usize>(&[0, 1, 2, 3, 4, 8, 11, 12, 15])?
+        };
+        let mut chars: [char; 21] = ['\0'; 21];
+        if page_num == CHINESE_4BIT_TAG {
+            let len = u.int_in_range(0..=Self::NWIDECHARS)?;
+            for i in 0..len {
+                chars[i] = unsafe {
+                    char::from_u32_unchecked(
+                        u.int_in_range((CHINESE_LO as u32)..=(CHINESE_HI as u32))?,
+                    )
+                };
+            }
+        } else {
+            let len = u.int_in_range(0..=Self::NCHARS)?;
+            for i in 0..len {
+                let ch = PAGES[page_num][u.int_in_range(1..=63)?];
+                if ch == '\u{ffff}' {
+                    break;
+                }
+                chars[i] = ch;
+            }
+        }
+
+        // This should always succeed. There's a bug if not.
+        Ok(
+            encode::<Self, _>(chars.iter().cloned().take_while(|x| *x != '\0'))
+                .expect("sixbit::PackedValue::arbitrary"),
+        )
+    }
 }
 
 impl PackedValue for u8 {
-    fn truncating_cast_from(i: usize) -> u8 { i as u8 }
-    fn most_significant_byte(self) -> u8 { self }
+    fn truncating_cast_from(i: usize) -> u8 {
+        i as u8
+    }
+    fn most_significant_byte(self) -> u8 {
+        self
+    }
 }
 
 impl PackedValue for u16 {
-    fn truncating_cast_from(i: usize) -> u16 { i as u16 }
-    fn most_significant_byte(self) -> u8 { (self >> 8) as u8 }
+    fn truncating_cast_from(i: usize) -> u16 {
+        i as u16
+    }
+    fn most_significant_byte(self) -> u8 {
+        (self >> 8) as u8
+    }
 }
 
 impl PackedValue for u32 {
-    fn truncating_cast_from(i: usize) -> u32 { i as u32 }
-    fn most_significant_byte(self) -> u8 { (self >> 24) as u8 }
+    fn truncating_cast_from(i: usize) -> u32 {
+        i as u32
+    }
+    fn most_significant_byte(self) -> u8 {
+        (self >> 24) as u8
+    }
 }
 
 impl PackedValue for u64 {
-    fn truncating_cast_from(i: usize) -> u64 { i as u64 }
-    fn most_significant_byte(self) -> u8 { (self >> 56) as u8 }
+    fn truncating_cast_from(i: usize) -> u64 {
+        i as u64
+    }
+    fn most_significant_byte(self) -> u8 {
+        (self >> 56) as u8
+    }
 }
 
 impl PackedValue for u128 {
-    fn truncating_cast_from(i: usize) -> u128 { i as u128 }
-    fn most_significant_byte(self) -> u8 { (self >> 120) as u8 }
+    fn truncating_cast_from(i: usize) -> u128 {
+        i as u128
+    }
+    fn most_significant_byte(self) -> u8 {
+        (self >> 120) as u8
+    }
 }
 
 #[derive(PartialEq, Debug)]
@@ -452,7 +516,7 @@ pub enum EncodeError {
     TooLong,
     NoCodePageFor(char),
     PageUnavailable(usize),
-    MissingFromPage(char)
+    MissingFromPage(char),
 }
 
 fn chinese_15bit_delta(c: char) -> Option<usize> {
@@ -466,26 +530,31 @@ fn chinese_15bit_delta(c: char) -> Option<usize> {
 pub fn encode<N, IT>(i: IT) -> Result<N, EncodeError>
 where
     N: PackedValue,
-    IT: Iterator<Item = char>
+    IT: Iterator<Item = char>,
 {
     let mut pi = i.peekable();
-    let mut out : N = N::truncating_cast_from(0);
+    let mut out: N = N::truncating_cast_from(0);
     match pi.peek() {
         // Zero-length strings map to page 0, code 0.
-        | None => Ok(out),
-        | Some(&init) => {
-
+        None => Ok(out),
+        Some(&init) => {
             // First handle special case of Chinese characters, which are encoded as deltas.
             if N::NCHARBITS > 0 && chinese_15bit_delta(init) != None {
-                let tag = if N::NTAGBITS == 2 { CHINESE_2BIT_TAG } else { CHINESE_4BIT_TAG };
+                let tag = if N::NTAGBITS == 2 {
+                    CHINESE_2BIT_TAG
+                } else {
+                    CHINESE_4BIT_TAG
+                };
                 out |= N::truncating_cast_from(tag);
-                let mut rembits : usize = N::NCHARBITS;
+                let mut rembits: usize = N::NCHARBITS;
                 for c in pi {
                     if rembits < 15 {
                         return Err(EncodeError::TooLong);
                     }
                     match chinese_15bit_delta(c) {
-                        None => { return Err(EncodeError::MissingFromPage(c)); }
+                        None => {
+                            return Err(EncodeError::MissingFromPage(c));
+                        }
                         Some(delta) => {
                             out <<= 15;
                             // We encode delta+1 so that a delta of 0 is encoded as 1
@@ -497,16 +566,16 @@ where
                 }
                 // Pad remainder.
                 out <<= rembits;
-                return Ok(out)
+                return Ok(out);
             }
 
             // Pick page: just try each one, there are only 16.
             match PAGES.iter().position(|&p| p.binary_search(&init).is_ok()) {
                 // No page means this string won't work.
-                | None => Err(EncodeError::NoCodePageFor(init)),
-                | Some(p) => {
+                None => Err(EncodeError::NoCodePageFor(init)),
+                Some(p) => {
                     let mut tag = p;
-                    let mut rem : usize = N::NCHARS;
+                    let mut rem: usize = N::NCHARS;
                     // Check and adjust tag by size.
                     if N::NTAGBITS == 2 {
                         // Tried a "secondary tag" when only
@@ -526,9 +595,9 @@ where
                         }
                         match PAGES[p].binary_search(&c) {
                             // No code for c in page.
-                            | Err(_) => return Err(EncodeError::MissingFromPage(c)),
+                            Err(_) => return Err(EncodeError::MissingFromPage(c)),
                             // Got a code, use it!
-                            | Ok(i) => {
+                            Ok(i) => {
                                 out <<= 6;
                                 out |= N::truncating_cast_from(i);
                                 rem -= 1;
@@ -544,15 +613,14 @@ where
     }
 }
 
-pub trait EncodeSixbit: Sized + Iterator<Item = char>
-{
+pub trait EncodeSixbit: Sized + Iterator<Item = char> {
     fn encode_sixbit<N: PackedValue>(self) -> Result<N, EncodeError>;
 }
 
 impl<T> EncodeSixbit for T
 where
     T: Sized,
-    T: Iterator<Item = char>
+    T: Iterator<Item = char>,
 {
     fn encode_sixbit<N: PackedValue>(self) -> Result<N, EncodeError> {
         encode::<N, Self>(self)
@@ -561,20 +629,20 @@ where
 
 pub struct DecodeSixbitIter<N: PackedValue> {
     tag: usize,
-    tmp: N
+    tmp: N,
 }
 
 impl<N> Iterator for DecodeSixbitIter<N>
 where
-    N: PackedValue
+    N: PackedValue,
 {
     type Item = char;
     fn next(self: &mut Self) -> Option<char> {
         if self.tag == CHINESE_4BIT_TAG {
             let ch0 = self.tmp.most_significant_byte();
             match ch0 {
-                | 0 => None,
-                | i => {
+                0 => None,
+                i => {
                     self.tmp <<= 8;
                     let ch1 = self.tmp.most_significant_byte();
                     self.tmp <<= 7;
@@ -586,8 +654,8 @@ where
             let mut ch = self.tmp.most_significant_byte();
             ch >>= 2;
             match ch {
-                | 0 => None,
-                | i => {
+                0 => None,
+                i => {
                     self.tmp <<= 6;
                     Some(PAGES[self.tag][i as usize])
                 }
@@ -597,13 +665,15 @@ where
 }
 
 pub trait DecodeSixbit
-where Self: PackedValue
+where
+    Self: PackedValue,
 {
     fn decode_sixbit(self) -> DecodeSixbitIter<Self>;
 }
 
 impl<N> DecodeSixbit for N
-where N: PackedValue
+where
+    N: PackedValue,
 {
     fn decode_sixbit(self) -> DecodeSixbitIter<Self> {
         let mut tmp = self;
@@ -620,9 +690,11 @@ where N: PackedValue
     }
 }
 
-
 #[cfg(test)]
 mod tests {
+
+    use rand::RngCore;
+
     use super::*;
     #[test]
     fn misc_invariants() {
@@ -630,7 +702,10 @@ mod tests {
         for pair in PAGES.windows(2) {
             if pair[0][1] != '\u{ffff}' && pair[1][1] != '\u{ffff}' {
                 if pair[0][1] >= pair[1][1] {
-                    println!("mis-ordered page pair: {:?} >= {:?}", pair[0][1], pair[1][1]);
+                    println!(
+                        "mis-ordered page pair: {:?} >= {:?}",
+                        pair[0][1], pair[1][1]
+                    );
                 }
                 assert!(pair[0][1] < pair[1][1]);
             }
@@ -640,26 +715,29 @@ mod tests {
             assert!(p[0] == '\0' || p[0] == '\u{ffff}');
             // Check that every page is sorted.
             for pair in p.windows(2) {
-                if pair[0] != '\0' && pair[1] != '\0' &&
-                    pair[0] != '\u{ffff}' && pair[1] != '\u{ffff}' {
-                        if pair[0] >= pair[1] {
-                            println!("mis-ordered char pair: {:?} >= {:?}", pair[0], pair[1]);
-                        }
-                        assert!(pair[0] < pair[1]);
+                if pair[0] != '\0'
+                    && pair[1] != '\0'
+                    && pair[0] != '\u{ffff}'
+                    && pair[1] != '\u{ffff}'
+                {
+                    if pair[0] >= pair[1] {
+                        println!("mis-ordered char pair: {:?} >= {:?}", pair[0], pair[1]);
                     }
+                    assert!(pair[0] < pair[1]);
+                }
             }
         }
     }
 
-    fn round_trip<N:PackedValue>(s: &str) -> Result<N, EncodeError> {
+    fn round_trip<N: PackedValue>(s: &str) -> Result<N, EncodeError> {
         match s.chars().encode_sixbit::<N>() {
             Ok(enc) => {
-                let dec:String = enc.decode_sixbit().collect();
+                let dec: String = enc.decode_sixbit().collect();
                 println!("roundtrip: {:?} => {:x} => {:?}", s, enc, dec);
                 assert!(dec == s);
                 Ok(enc)
             }
-            err => err
+            err => err,
         }
     }
 
@@ -698,7 +776,7 @@ mod tests {
         assert!(round_trip::<u64>("sh@rk") == Err(EncodeError::MissingFromPage('@')));
     }
 
-    fn check_order<N:PackedValue>(a: &str, b: &str) {
+    fn check_order<N: PackedValue>(a: &str, b: &str) {
         assert!(a < b);
         assert!(a.chars().encode_sixbit::<N>().unwrap() < b.chars().encode_sixbit::<N>().unwrap());
     }
@@ -789,5 +867,18 @@ mod tests {
         // Non-primary tag: only available in u64 and u16 forms.
         assert!(round_trip::<u64>("ｲｸﾂｶﾉ").is_ok());
         assert!(round_trip::<u16>("ﾔﾙ").is_ok());
+    }
+
+    #[test]
+    fn test_arbitrary() {
+        for _ in 0..64 {
+            let mut bytes = [0u8; 1024];
+            rand::thread_rng().fill_bytes(&mut bytes);
+            let mut u = arbitrary::Unstructured::new(&bytes);
+            let packed = <u128 as PackedValue>::arbitrary(&mut u).expect("arbitrary");
+            dbg!(packed);
+            let decoded: String = packed.decode_sixbit().collect();
+            dbg!(decoded);
+        }
     }
 }
